@@ -1,13 +1,11 @@
-import { LoggerInstance, SessionKeyService } from '../../services';
+import { ObjectId } from 'mongodb';
+import { SessionKeyService } from '../../services';
 import { ISessionKeyData, ObjectIDByTypeORM } from '../../types';
 import { MongoManager } from '../connection';
 import { UserEntity } from '../entities';
 
-// @ts-ignore
-import { ObjectID } from 'mongodb';
-
 export const removeInvalidSKsById = async (userId: ObjectIDByTypeORM) => {
-  const user = await UserEntity.findOneBy({ _id: new ObjectID(userId) });
+  const user = await UserEntity.findOneBy({ _id: new ObjectId(userId) });
 
   if (!user) {
     throw new Error('User is not found.');
@@ -21,7 +19,7 @@ export const removeInvalidSKsById = async (userId: ObjectIDByTypeORM) => {
     await MongoManager.updateOne(
       UserEntity,
       { _id: userId },
-      { $pull: { sessionKeys: { $in: invalidSessionKeys } } }
+      { $pull: { sessionKeys: { $in: invalidSessionKeys } } as any }
     );
   }
 
@@ -37,6 +35,6 @@ export const pushSessionKeyById = async (
     {
       _id: userId,
     },
-    { $push: { sessionKeys: sessionKey } }
+    { $push: { sessionKeys: sessionKey } as any }
   );
 };

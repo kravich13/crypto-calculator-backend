@@ -2,7 +2,7 @@ import {
   BaseEntity,
   CreateDateColumn,
   Entity,
-  ObjectID,
+  ObjectId,
   ObjectIdColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,7 +12,7 @@ import {
 export class Base extends BaseEntity {
   @PrimaryGeneratedColumn()
   @ObjectIdColumn()
-  _id!: ObjectID;
+  _id!: ObjectId;
 
   @CreateDateColumn()
   createdAt!: Date;

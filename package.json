@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "debug": "tsc-watch -p tsconfig.json --onSuccess 'node --inspect=0.0.0.0:9229 ./lib'",
+    "start": "node lib/index",
     "prod": "node lib/index",
     "tsc": "tsc",
     "lint": "eslint . --ext .tsx --ext .ts src/",

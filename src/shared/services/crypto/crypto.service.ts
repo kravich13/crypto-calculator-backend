@@ -18,6 +18,8 @@ import {
   IGetCoinsProfitOutput,
 } from './outputs';
 
+const fetch = (url: string) => import('node-fetch').then(({ default: fetch }) => fetch(url));
+
 export const getMainCoinsInfo = (coinData: AvialableCoinsType[]) =>
   coinData.map(({ _id, ...rest }) => rest);
 

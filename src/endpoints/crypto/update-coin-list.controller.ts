@@ -5,6 +5,8 @@ import { ControllerOptions } from '../../shared/types';
 import { statusOutputSuccess } from '../../shared/view-models';
 import { IUpdateCoinListQueryInput, UpdateCoinListSchema } from './schemas';
 
+const fetch = (url: string) => import('node-fetch').then(({ default: fetch }) => fetch(url));
+
 export const updateCoinListController: ControllerOptions<{
   Querystring: IUpdateCoinListQueryInput;
 }> = {

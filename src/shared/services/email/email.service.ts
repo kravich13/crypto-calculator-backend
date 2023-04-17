@@ -3,7 +3,12 @@ import handlebars from 'handlebars';
 import { createTransport } from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/sendmail-transport';
 import path from 'path';
-import { smtpConfig } from '../../configs/index';
+import { frontendConfig, smtpConfig } from '../../configs/index';
+
+interface ISendSignInLetterHandlebars {
+  code: string;
+  toFrontendURL: string;
+}
 
 const transporter = createTransport({
   host: smtpConfig.host,
@@ -42,7 +47,10 @@ const getEmailHTML = async <T extends object>(templateContext: T): Promise<strin
 };
 
 export const sendSignInLetter = async (toEmail: string, code: string): Promise<void> => {
-  const html = await getEmailHTML({ code, email: toEmail });
+  const html = await getEmailHTML<ISendSignInLetterHandlebars>({
+    code,
+    toFrontendURL: `${frontendConfig.url}/confirm-email/${code}?email=${toEmail}`,
+  });
 
   const mailOptions: MailOptions = {
     from: `<${smtpConfig.user}>`,

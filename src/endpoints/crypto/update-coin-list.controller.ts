@@ -1,11 +1,10 @@
+import got from 'got';
 import { ICoinsMarketsResponse } from '../../shared/coin-gecko';
 import { coinGeckoConfig } from '../../shared/configs';
 import { CoinListEntity } from '../../shared/database';
 import { ControllerOptions } from '../../shared/types';
 import { statusOutputSuccess } from '../../shared/view-models';
 import { IUpdateCoinListQueryInput, UpdateCoinListSchema } from './schemas';
-
-const fetch = (url: string) => import('node-fetch').then(({ default: fetch }) => fetch(url));
 
 export const updateCoinListController: ControllerOptions<{
   Querystring: IUpdateCoinListQueryInput;
@@ -16,11 +15,9 @@ export const updateCoinListController: ControllerOptions<{
   handler: async (req, reply) => {
     const { page, per_page } = req.query;
 
-    const res = await fetch(
+    const data = (await got(
       `${coinGeckoConfig.url}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${per_page}&page=${page}&sparkline=false`
-    );
-
-    const data = (await res.json()) as ICoinsMarketsResponse[];
+    ).json()) as ICoinsMarketsResponse[];
 
     for (const { id, name, symbol, image, atl_date } of data) {
       await CoinListEntity.create({

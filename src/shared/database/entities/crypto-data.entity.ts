@@ -14,10 +14,4 @@ export class CryptoDataEntity extends Base {
 
   @Column()
   monthlyInvestment!: number;
-
-  @Column()
-  totalProfit!: number;
-
-  @Column()
-  totalGrowth!: number;
 }

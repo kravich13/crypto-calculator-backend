@@ -19,7 +19,7 @@ export const calculateProfitController: ControllerOptions<{ Body: CalculateProfi
     const end = DateTime.fromJSDate(endDate);
 
     const investmentPeriod = CryptoService.getInvestmentPeriod(start, end);
-    const totalInvested = Number((investmentPeriod * monthlyInvestment).toFixed(2));
+    const totalInvested = Number((investmentPeriod * monthlyInvestment).toFixed());
 
     const coinsPricesPromises = selectedCoins.map(({ coinId }) =>
       CryptoService.getCoinPrices({ coinId, startDate: start, endDate: end })
@@ -52,7 +52,7 @@ export const calculateProfitController: ControllerOptions<{ Body: CalculateProfi
     return {
       totalInvested,
       investmentPeriod,
-      totalCapital: Number(totalCapital.toFixed(2)),
+      totalCapital: Number(totalCapital.toFixed()),
       totalGrowth,
       coins: coinsProfit,
       monthlyCapitals,

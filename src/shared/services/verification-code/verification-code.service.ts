@@ -2,12 +2,13 @@ import { randomInt } from 'crypto';
 import { DateTime } from 'luxon';
 import { VerificationCodeEntity } from '../../database';
 import { IGenerageCodeOutput } from './outputs';
+import { emailConfig } from '../../configs';
 
 export const createCode = (): IGenerageCodeOutput => {
   const date = DateTime.utc();
 
   const code = String(randomInt(101010, 999999));
-  const expiresAt = date.plus({ minutes: 3 }).toJSDate();
+  const expiresAt = date.plus({ minutes: emailConfig.lifetimeExpiresIn }).toJSDate();
 
   return { code, expiresAt };
 };

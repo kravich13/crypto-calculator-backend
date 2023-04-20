@@ -25,7 +25,7 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     if (savedCode) {
       const currentDate = DateTime.utc();
       const codeExpiresAt = DateTime.fromJSDate(savedCode.createdAt).plus({
-        seconds: emailConfig.expiresIn,
+        seconds: emailConfig.resendExpiresIn,
       });
 
       if (+currentDate < +codeExpiresAt) {

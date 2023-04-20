@@ -125,7 +125,7 @@ export const getTotalCapital = (coinsProfit: GetTotalCapitalInput) =>
 export const getGrowth = (invested: number, capital: number) => {
   const percentOfInvestFromFinal = (invested * 100) / capital;
   const increaseIn = capital / invested;
-  const growth = Number(((100 - percentOfInvestFromFinal) * increaseIn).toFixed(2));
+  const growth = Number(((100 - percentOfInvestFromFinal) * increaseIn).toFixed());
 
   return growth;
 };
@@ -212,7 +212,7 @@ export const getCoinsProfit = ({
     const averagePrice = prices.reduce((prev, price) => prev + price, 0) / prices.length;
     const startingPrice = prices.at(0) || 0;
     const lastPrice = prices.at(-1) || 0;
-    const capital = Number((purchasedCoins * lastPrice).toFixed(2));
+    const capital = Number((purchasedCoins * lastPrice).toFixed());
     const growth = getGrowth(invested, capital);
 
     return {
@@ -221,7 +221,7 @@ export const getCoinsProfit = ({
       name,
       symbol,
       share,
-      invested: Number(invested.toFixed(2)),
+      invested: Number(invested.toFixed()),
       capital,
       startingPrice: fixedPrice(startingPrice),
       averagePrice: fixedPrice(averagePrice),

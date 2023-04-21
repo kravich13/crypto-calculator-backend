@@ -41,7 +41,7 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     const codeData = VerificationCodeService.createCode();
 
     try {
-      // await EmailService.sendSignInLetter(email, codeData.code);
+      await EmailService.sendSignInLetter(email, codeData.code);
       await VerificationCodesRepository.pushOrUpdateVCsByUserId({
         userId,
         codeData,

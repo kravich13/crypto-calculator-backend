@@ -1,6 +1,11 @@
 import { DateTime } from 'luxon';
 import { emailConfig } from '../../shared/configs';
-import { UserEntity, VerificationCodeEntity } from '../../shared/database';
+import {
+  MongoManager,
+  UserEntity,
+  VerificationCodesEntity,
+  VerificationCodesRepository,
+} from '../../shared/database';
 import { BadRequestException, InternalServerError } from '../../shared/errors';
 import { EmailService, LoggerInstance, VerificationCodeService } from '../../shared/services';
 import { ControllerOptions } from '../../shared/types';
@@ -20,33 +25,35 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     }
 
     const userId = String(user._id);
-    const savedCode = await VerificationCodeEntity.findOneBy({ userId });
+    const savedCodes = await VerificationCodesEntity.findOneBy({ userId });
 
-    if (savedCode) {
+    if (savedCodes) {
       const currentDate = DateTime.utc();
-      const codeExpiresAt = DateTime.fromJSDate(savedCode.createdAt).plus({
-        seconds: emailConfig.expiresIn,
+      const codeExpiresAt = DateTime.fromJSDate(savedCodes.updatedAt).plus({
+        seconds: emailConfig.resendExpiresIn,
       });
 
       if (+currentDate < +codeExpiresAt) {
         throw new BadRequestException('Wait before you can request another code.');
       }
-
-      await VerificationCodeEntity.delete({ userId });
     }
 
-    const { code, expiresAt } = VerificationCodeService.createCode();
+    const codeData = VerificationCodeService.createCode();
 
     try {
-      await EmailService.sendSignInLetter(email, code);
-      await VerificationCodeEntity.create({ userId, code, expiresAt }).save();
+      // await EmailService.sendSignInLetter(email, codeData.code);
+      await VerificationCodesRepository.pushOrUpdateVCsByUserId({
+        userId,
+        codeData,
+        existCodes: savedCodes?.codes,
+      });
     } catch (err) {
       LoggerInstance.error('Send message to email error.');
       throw new InternalServerError('Internal server error.');
     }
 
     return {
-      emailCodeExpiresIn: DateTime.fromJSDate(expiresAt).toMillis(),
+      emailCodeExpiresIn: codeData.expiresIn,
     };
   },
 };

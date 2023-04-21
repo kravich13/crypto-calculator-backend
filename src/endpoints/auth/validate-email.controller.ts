@@ -1,5 +1,10 @@
 import { jwtConfig } from '../../shared/configs';
-import { UserEntity, UserRepository, VerificationCodeEntity } from '../../shared/database';
+import {
+  UserEntity,
+  UserRepository,
+  VerificationCodesEntity,
+  VerificationCodesRepository,
+} from '../../shared/database';
 import { BadRequestException, UnauthorizedException } from '../../shared/errors';
 import {
   JWTService,
@@ -25,18 +30,30 @@ export const validateEmailController: ControllerOptions<{ Body: IValidateEmailBo
       throw new BadRequestException('User does not exist.');
     }
 
-    const savedCode = await VerificationCodeEntity.findOneBy({ userId: String(user._id) });
+    const userId = String(user._id);
+
+    const savedCodes = await VerificationCodesEntity.findOneBy({ userId });
+
+    if (!savedCodes) {
+      throw new UnauthorizedException('User is not found.');
+    }
 
     try {
-      VerificationCodeService.validateCode(savedCode, receivedCode);
+      VerificationCodeService.validateCode(savedCodes.codes, receivedCode);
     } catch (err: any) {
       LoggerInstance.error('Verification code error.');
+
+      await VerificationCodesRepository.removeInvalidVCsByUserId(userId);
+
       throw new UnauthorizedException(err.message);
     }
 
     const sessionKey = SessionKeyService.create();
 
-    UserRepository.pushSessionKeyById(user._id, sessionKey);
+    await Promise.allSettled([
+      UserRepository.pushSessionKeyById(user._id, sessionKey),
+      VerificationCodesRepository.removeInvalidVCsByUserId(userId),
+    ]);
 
     const { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn } =
       await JWTService.generateTokens({

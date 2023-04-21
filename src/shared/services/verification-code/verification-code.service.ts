@@ -1,29 +1,34 @@
 import { randomInt } from 'crypto';
 import { DateTime } from 'luxon';
-import { VerificationCodeEntity } from '../../database';
-import { IGenerageCodeOutput } from './outputs';
+import { emailConfig } from '../../configs';
+import { IVerificationCodeData } from '../../types';
+import { GenerageCodeOutput } from './outputs';
 
-export const createCode = (): IGenerageCodeOutput => {
+export const createCode = (): GenerageCodeOutput => {
   const date = DateTime.utc();
-
   const code = String(randomInt(101010, 999999));
-  const expiresAt = date.plus({ minutes: 3 }).toJSDate();
+  const expiresIn = date.plus({ second: emailConfig.codeLifetime }).toMillis();
 
-  return { code, expiresAt };
+  return { expiresIn: expiresIn, code };
 };
 
-export const validateCode = (
-  savedCode: VerificationCodeEntity | null,
-  receivedCode: string
-): void => {
-  if (!savedCode || savedCode.code !== receivedCode) {
+export const validateCode = (codes: IVerificationCodeData[], receivedCode: string): void => {
+  const codeData = codes.find(({ code }) => code === receivedCode);
+
+  if (!codeData) {
     throw new Error('Invalid code sent.');
   }
 
   const currentDate = DateTime.utc();
-  const codeExpiresAt = DateTime.fromJSDate(savedCode.expiresAt);
+  const codeExpiresIn = DateTime.fromMillis(codeData.expiresIn);
 
-  if (+currentDate > +codeExpiresAt) {
-    throw new Error('Code lifetime expired..');
+  if (+currentDate > +codeExpiresIn) {
+    throw new Error('Code lifetime expired.');
   }
+};
+
+export const isValidCode = (code: IVerificationCodeData) => {
+  const date = DateTime.utc();
+
+  return code.expiresIn > date.toMillis();
 };

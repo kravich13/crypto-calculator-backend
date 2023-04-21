@@ -1,4 +1,3 @@
-export interface IGenerageCodeOutput {
-  code: string;
-  expiresAt: Date;
-}
+import { IVerificationCodeData } from '../../../types';
+
+export type GenerageCodeOutput = IVerificationCodeData;

@@ -8,6 +8,7 @@ docker/
 package-lock.json
 tsconfig.tsbuildinfo
 .bash_profile.sw
+.vscode/settings.json
 
 # testing
 /coverage

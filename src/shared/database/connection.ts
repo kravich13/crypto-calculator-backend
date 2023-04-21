@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { mongoConfig } from '../configs';
-import { CoinListEntity, CryptoDataEntity, UserEntity, VerificationCodeEntity } from './entities';
+import { CoinListEntity, CryptoDataEntity, UserEntity, VerificationCodesEntity } from './entities';
 import { projectModeConfig } from '../configs/project-mode';
 
 export const MyDataSource = new DataSource({
@@ -13,7 +13,7 @@ export const MyDataSource = new DataSource({
   authSource: 'admin',
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  entities: [UserEntity, VerificationCodeEntity, CoinListEntity, CryptoDataEntity],
+  entities: [UserEntity, VerificationCodesEntity, CoinListEntity, CryptoDataEntity],
 });
 
 export const MongoManager = MyDataSource.mongoManager;

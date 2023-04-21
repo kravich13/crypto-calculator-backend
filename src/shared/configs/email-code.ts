@@ -1,8 +1,8 @@
-const lifetimeExpiresIn = Number(process.env.EMAIL_CODE_LIFETIME_EXPIRES_IN_SECONDS);
+const codeLifetime = Number(process.env.EMAIL_CODE_LIFETIME_IN_SECONDS);
 const resendExpiresIn = Number(process.env.EMAIL_CODE_RESEND_EXPIRES_IN_SECONDS);
 
-if (Number.isNaN(lifetimeExpiresIn)) {
-  throw new Error('process.env.EMAIL_CODE_LIFETIME_EXPIRES_IN_SECONDS is NaN');
+if (Number.isNaN(codeLifetime)) {
+  throw new Error('process.env.EMAIL_CODE_LIFETIME_IN_SECONDS is NaN');
 }
 
 if (Number.isNaN(resendExpiresIn)) {
@@ -10,6 +10,6 @@ if (Number.isNaN(resendExpiresIn)) {
 }
 
 export const emailConfig = {
-  lifetimeExpiresIn,
+  codeLifetime,
   resendExpiresIn,
 };

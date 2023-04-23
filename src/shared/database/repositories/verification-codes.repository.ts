@@ -43,27 +43,29 @@ export const pushOrUpdateVCsByUserId = async ({
 }: IPushOrUpdateVCsByUserIdInput) => {
   if (!existCodes) {
     await VerificationCodesEntity.create({ userId, codes: [codeData] }).save();
-  } else {
-    const codeExists = existCodes.some(({ code }) => code === codeData.code);
 
-    if (codeExists) {
-      await Promise.all([
-        MongoManager.updateOne(
-          VerificationCodesEntity,
-          { userId, 'codes.code': codeData.code },
-          { $set: { 'codes.$.expiresIn': codeData.expiresIn } as any }
-        ),
-        updateUpdatedAtByUserId(userId),
-      ]);
-    } else {
-      await Promise.all([
-        MongoManager.updateOne(
-          VerificationCodesEntity,
-          { userId },
-          { $push: { codes: codeData } as any }
-        ),
-        updateUpdatedAtByUserId(userId),
-      ]);
-    }
+    return;
+  }
+
+  const codeExists = existCodes.some(({ code }) => code === codeData.code);
+
+  if (codeExists) {
+    await Promise.all([
+      MongoManager.updateOne(
+        VerificationCodesEntity,
+        { userId, 'codes.code': codeData.code },
+        { $set: { 'codes.$.expiresIn': codeData.expiresIn } as any }
+      ),
+      updateUpdatedAtByUserId(userId),
+    ]);
+  } else {
+    await Promise.all([
+      MongoManager.updateOne(
+        VerificationCodesEntity,
+        { userId },
+        { $push: { codes: codeData } as any }
+      ),
+      updateUpdatedAtByUserId(userId),
+    ]);
   }
 };

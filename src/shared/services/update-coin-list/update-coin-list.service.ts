@@ -6,7 +6,9 @@ import { LoggerInstance } from '../logger';
 
 export const updateCoinList = () => {
   const PER_PAGE = 250;
-  let page = -1;
+  let page = 0;
+
+  LoggerInstance.info('Update coin list task has been started.');
 
   const intervalId = setInterval(async () => {
     try {
@@ -18,6 +20,9 @@ export const updateCoinList = () => {
 
       if (data.length === 0) {
         clearInterval(intervalId);
+
+        LoggerInstance.info('Update coin list task has been finished.');
+
         return;
       }
 

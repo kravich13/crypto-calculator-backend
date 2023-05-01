@@ -1,6 +1,6 @@
 import got from 'got/dist/source';
 import { ICoinsMarketsResponse } from '../../coin-gecko';
-import { coinGeckoConfig } from '../../configs';
+import { coinGeckoConfig, cronUpdateCoinListConfig } from '../../configs';
 import { CoinListEntity, MongoManager } from '../../database';
 import { LoggerInstance } from '../logger';
 
@@ -34,5 +34,5 @@ export const updateCoinList = () => {
     } catch (err) {
       LoggerInstance.error('Update coin list error');
     }
-  }, 60 * 1_000);
+  }, cronUpdateCoinListConfig.invervalInSeconds * 1_000);
 };

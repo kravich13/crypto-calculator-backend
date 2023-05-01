@@ -9,6 +9,7 @@ import { registerFastifyCookie } from './shared/plugins/cookie';
 import { registerFastifySwagger } from './shared/plugins/swagger';
 import { LoggerInstance } from './shared/services';
 import cors from '@fastify/cors';
+import { registerUpdateCoinListCron } from './shared/plugins/cron';
 
 const ajv = new Ajv({
   strict: true,
@@ -32,6 +33,8 @@ const start = async () => {
   await server.register(cors);
   await server.register(endpointRouter);
   await server.listen({ port: PORT, host: '0.0.0.0' });
+
+  registerUpdateCoinListCron();
 };
 
 start();

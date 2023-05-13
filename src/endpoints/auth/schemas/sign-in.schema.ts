@@ -14,9 +14,9 @@ export const signInSchema = {
     200: {
       type: 'object',
       properties: {
-        emailCodeExpiresIn: { type: 'number' },
+        emailCodeResendExpiresIn: { type: 'number' },
       },
-      required: ['emailCodeExpiresIn'],
+      required: ['emailCodeResendExpiresIn'],
     },
   },
 };

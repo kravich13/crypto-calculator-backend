@@ -53,7 +53,7 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     }
 
     return {
-      emailCodeExpiresIn: codeData.expiresIn,
+      emailCodeResendExpiresIn: emailConfig.resendExpiresIn,
     };
   },
 };

@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { emailConfig } from '../../shared/configs';
 import {
-  MongoManager,
   UserEntity,
   VerificationCodesEntity,
   VerificationCodesRepository,
@@ -26,14 +25,15 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
 
     const userId = String(user._id);
     const savedCodes = await VerificationCodesEntity.findOneBy({ userId });
+    let emailCodeResendExpiresIn = 0;
 
     if (savedCodes) {
       const currentDate = DateTime.utc();
-      const codeExpiresAt = DateTime.fromJSDate(savedCodes.updatedAt).plus({
-        seconds: emailConfig.resendExpiresIn,
-      });
+      emailCodeResendExpiresIn = DateTime.fromJSDate(savedCodes.updatedAt)
+        .plus({ seconds: emailConfig.resendExpiresIn })
+        .toMillis();
 
-      if (+currentDate < +codeExpiresAt) {
+      if (+currentDate < emailCodeResendExpiresIn) {
         throw new BadRequestException('Wait before you can request another code.');
       }
     }
@@ -53,7 +53,7 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     }
 
     return {
-      emailCodeResendExpiresIn: emailConfig.resendExpiresIn,
+      emailCodeResendExpiresIn,
     };
   },
 };

@@ -24,19 +24,23 @@ export const signInController: ControllerOptions<{ Body: ISignInBodyInput }> = {
     }
 
     const userId = String(user._id);
+    const currentDate = DateTime.utc();
+
     const savedCodes = await VerificationCodesEntity.findOneBy({ userId });
-    let emailCodeResendExpiresIn = 0;
 
     if (savedCodes) {
-      const currentDate = DateTime.utc();
-      emailCodeResendExpiresIn = DateTime.fromJSDate(savedCodes.updatedAt)
+      const codeResendExpiresIn = DateTime.fromJSDate(savedCodes.updatedAt)
         .plus({ seconds: emailConfig.resendExpiresIn })
         .toMillis();
 
-      if (+currentDate < emailCodeResendExpiresIn) {
+      if (+currentDate < codeResendExpiresIn) {
         throw new BadRequestException('Wait before you can request another code.');
       }
     }
+
+    const emailCodeResendExpiresIn = currentDate
+      .plus({ seconds: emailConfig.resendExpiresIn })
+      .toMillis();
 
     const codeData = VerificationCodeService.createCode();
 

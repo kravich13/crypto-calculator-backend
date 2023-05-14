@@ -45,6 +45,8 @@ export const getCoinPrices = async ({
   const unixStartDate = startDate.toUnixInteger();
   const unixEndDate = endDate.toUnixInteger();
 
+  LoggerInstance.info(`Start date: ${startDate.toMillis()}. End date: ${endDate.toMillis()}.`);
+
   const data = (await got(
     `${coinGeckoConfig.url}/coins/${coinId}/market_chart/range?vs_currency=usd&from=${unixStartDate}&to=${unixEndDate}`
   ).json()) as ICoinsMarketChartRangeResponse;
@@ -87,7 +89,9 @@ export const getCoinPrices = async ({
     }
   }
 
-  return { [coinId]: resultPrices };
+  const correntPrices = resultPrices.filter((price) => price > 0);
+
+  return { [coinId]: correntPrices };
 };
 
 export const getMainCoinsData = ({
@@ -187,10 +191,12 @@ const getCoinCapitals = (prices: number[], investment: number) => {
   const purchasedTokens: number[] = [];
 
   for (let i = 0; i < prices.length; i++) {
-    const currentMonthTokens = investment / prices[i];
+    const price = prices[i];
+
+    const currentMonthTokens = investment / price;
 
     purchasedTokens[i] = (purchasedTokens[i - 1] ?? 0) + currentMonthTokens;
-    capitals[i] = purchasedTokens[i] * prices[i];
+    capitals[i] = purchasedTokens[i] * price;
   }
 
   return capitals;

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import Ajv from 'ajv';
 import ajvFormats from 'ajv-formats';
-import fastify from 'fastify';
+import fastify, { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import { endpointRouter } from './endpoints/endpoint.router';
 import { MyDataSource } from './shared/database';
 import { registerGlobal } from './shared/error-handler';
@@ -23,7 +23,7 @@ ajvFormats(ajv, ['email']);
 const envPORT = process.env.PORT;
 
 const PORT = Boolean(envPORT && !Number.isNaN(envPORT)) ? Number(envPORT) : 5001;
-const server = fastify({ logger: LoggerInstance });
+const server: FastifyInstance = fastify({ logger: LoggerInstance as FastifyBaseLogger });
 
 const start = async () => {
   registerGlobal(server);

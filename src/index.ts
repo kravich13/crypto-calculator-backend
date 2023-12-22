@@ -30,7 +30,18 @@ const start = async () => {
   await MyDataSource.initialize();
   await registerFastifyCookie(server);
   await registerFastifySwagger(server);
-  await server.register(cors);
+  await server.register(cors, {
+    origin: (origin, cb) => {
+      const allowedOrigins = ['https://crypto-metrics.up.railway.app'];
+      const allowOrigin = allowedOrigins.includes(origin || '') || !origin;
+      cb(null, allowOrigin);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: true,
+  });
+
   await server.register(endpointRouter);
   await server.listen({ port: PORT, host: '0.0.0.0' });
 
